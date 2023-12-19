@@ -11,9 +11,18 @@
     <form action="" method="post" enctype="multipart/form-data">
         @csrf
       <input type="file" name="file_doc" id=""><br>
-      <input type="text" name="old_text" placeholder="Teks yang akan diganti"><br>  
+      <input type="text" name="old_text" placeholder="Teks yang akan diganti"><br>
       <input type="text" name="new_text" placeholder="Teks pengganti"><br><br>
-      <input type="submit" name="Submit">  
+
+      <input type="radio" name="render_method" value="old">
+      <label for="render_method">metode render lama</label>
+      <br><br>
+
+      <input type="radio" name="render_method" value="new">
+      <label for="render_method">metode render baru</label>
+      <br><br>
+
+      <input type="submit" name="Submit">
     </form>
 </body>
 </html>

@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // local gotenberg installation
+    'gotenberg' => [
+        'base_url' => env('GOTENBERG_BASE_URL', 'http://gotenberg:3000'),
+    ],
+
 ];
