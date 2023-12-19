@@ -3,6 +3,8 @@ FROM php:8.2-cli-alpine
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
+COPY deploy/php/php.ini "$PHP_INI_DIR/php.ini"
+
 #RUN apk update && apk add --no-cache libzip-dev && docker-php-ext-enable zip
 RUN install-php-extensions zip
 

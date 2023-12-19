@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use ConvertApi\ConvertApi;
 use PhpOffice\PhpWord\TemplateProcessor;
+use Gotenberg\Gotenberg;
+use Gotenberg\Stream;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,6 +22,7 @@ Route::get('/', function () {
 });
 
 Route::post('/', function (Request $request) {
+    ini_set('upload_max_filesize', 20400);
 
     $file = $request->file('file_doc');
     $file->move(
@@ -38,15 +41,33 @@ Route::post('/', function (Request $request) {
     $phpword->saveAs(public_path('/doc/output.docx'));
 
     $getPathFileReplace = public_path('/doc/output.docx');
-    ConvertApi::setApiSecret(config('convertapi.secret'));
-    $result = ConvertApi::convert(
-        'pdf',
-        [
-            'File' => $getPathFileReplace,
-        ],
-        'docx'
-    );
-    $result->saveFiles(public_path('/pdf/output.pdf'));
-    $downloadFile = public_path('/pdf/output.pdf');
+
+    $downloadFile = null;
+    if ($request->render_method == 'old') {
+        ConvertApi::setApiSecret(config('convertapi.secret'));
+        $result = ConvertApi::convert(
+            'pdf',
+            [
+                'File' => $getPathFileReplace,
+            ],
+            'docx'
+        );
+        $result->saveFiles(public_path('/pdf/output.pdf'));
+        $downloadFile = public_path('/pdf/output.pdf');
+    } else {
+        try {
+            $request = Gotenberg::libreOffice(config('services.gotenberg.base_url'))
+                ->convert(Stream::path($getPathFileReplace));
+            $filename = Gotenberg::save($request, public_path('/pdf/'));
+            $downloadFile = public_path("/pdf/$filename");
+        } catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
+            return response()->json([
+                'trace' =>  $e->getGotenbergTrace(),
+            ], 500);
+        }
+        //$downloadFile = $getPathFileReplace;
+    }
+
     return response()->download($downloadFile);
+
 });

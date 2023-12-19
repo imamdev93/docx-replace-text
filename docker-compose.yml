@@ -2,7 +2,9 @@ version: "3"
 
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
     ports:
       - "3005:80"
     volumes:
@@ -13,3 +15,14 @@ services:
     image: gotenberg/gotenberg:7
     ports:
       - "3000:3000"
+    # important, as gotenberg require significant memories. see:
+    # - https://github.com/gotenberg/gotenberg/issues/465#issuecomment-1146075750
+    # - https://docs.docker.com/compose/compose-file/deploy/#resources
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 500M
+        reservations:
+          cpus: '0.50'
+          memory: 200M
