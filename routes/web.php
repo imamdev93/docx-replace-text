@@ -22,8 +22,6 @@ Route::get('/', function () {
 });
 
 Route::post('/', function (Request $request) {
-    ini_set('upload_max_filesize', 20400);
-
     $file = $request->file('file_doc');
     $file->move(
         public_path('/uploads'),
@@ -65,7 +63,6 @@ Route::post('/', function (Request $request) {
                 'trace' =>  $e->getGotenbergTrace(),
             ], 500);
         }
-        //$downloadFile = $getPathFileReplace;
     }
 
     return response()->download($downloadFile);
